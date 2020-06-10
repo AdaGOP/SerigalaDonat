@@ -10,6 +10,18 @@ import UIKit
 import QuartzCore
 import SceneKit
 
+struct GameBitMask{
+    static let wolf = 1 << 1
+    static let land = 1 << 2
+    static let donut = 1 << 3
+}
+
+
+enum ParticleType: Int,CaseIterable{
+    case collect = 0
+    case walkDust
+}
+
 class GameViewController: UIViewController {
     
     private var scnView: SCNView!
@@ -21,11 +33,13 @@ class GameViewController: UIViewController {
     
     
     // Camera and targets
-    
     private var cameraNode = SCNNode()
     private var lookAtTarget = SCNNode()
     private var activeCamera: SCNNode?
     static let CameraOrientationSensitivity: Float = 0.05
+    
+    //Particles
+    private var particles = [SCNParticleSystem](repeating: SCNParticleSystem(), count: ParticleType.allCases.count)
     
     var cameraDirection = vector_float2.zero {
         didSet {
@@ -39,13 +53,17 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+    
         
         setupWorld()
         setupPlayer()
+        setupDonut()
         loadCamera()
+        setupParticle()
         
     }
     
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -67,14 +85,43 @@ class GameViewController: UIViewController {
         scnView = (self.view as! SCNView)
         scene = SCNScene(named: "art.scnassets/GameScene.scn")!
         scene!.background.contents = UIImage(named: "art.scnassets/textures/Background_sky")
+        scene?.physicsWorld.contactDelegate = self
+        
         scnView.scene = scene
         scnView.allowsCameraControl = false
+        scnView.showsStatistics = true
+        
+        let floor = scene?.rootNode.childNode(withName: "Grass", recursively: true)
+        floor?.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
+        floor?.physicsBody?.categoryBitMask = GameBitMask.land
+        floor?.physicsBody?.collisionBitMask = GameBitMask.wolf
     }
     
     func setupPlayer() {
         player = Player()
+        player?.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+        player?.physicsBody?.categoryBitMask = GameBitMask.wolf
+        player?.physicsBody?.collisionBitMask = GameBitMask.land | GameBitMask.donut
+        player?.physicsBody?.contactTestBitMask = GameBitMask.donut
         scene?.rootNode.addChildNode(player!)
     }
+    
+    func setupDonut(){
+        for i in 1...20{
+            let donut = Donut()
+            let x = Int.random(in: -10...10)
+            let z = Int.random(in: -10...10)
+            donut.position = SCNVector3(x,0,z)
+            self.scene?.rootNode.addChildNode(donut)
+        }
+    }
+    
+    func setupParticle(){
+        particles[ParticleType.collect.rawValue] = SCNParticleSystem.loadParticleSystems(atPath: "art.scnassets/Particles/Collect/collect.scnp").first!
+    }
+    
+    
+
     
     func updatePlayerPosition(_ josyStickData: AnalogJoystickData) {
         player?.updateWolfPosition(joyStickData: josyStickData, velocityMultiplier: velocityMultiplier)
@@ -84,11 +131,17 @@ class GameViewController: UIViewController {
         player?.changeWolf(state)
     }
     
+    func collect(_ donut: Donut){
+        donut.runAction(SCNAction.playAudio(SCNAudioSource(fileNamed: "collect.mp3")!, waitForCompletion: true))
+        donut.particleEmitter.addParticleSystem(particles[ParticleType.collect.rawValue])
+        donut.childNode(withName: "donut", recursively: true)?.isHidden = true
+    }
+    
     func loadCamera() {
         //The lookAtTarget node will be placed slighlty above the character using a constraint
         weak var weakSelf = self
 
-        self.lookAtTarget.constraints = [ SCNTransformConstraint.positionConstraint(
+        self.lookAtTarget.constraints = [SCNTransformConstraint.positionConstraint(
                                         inWorldSpace: true, with: { (_ node: SCNNode, _ position: SCNVector3) -> SCNVector3 in
             guard let strongSelf = weakSelf else { return position }
 
@@ -192,4 +245,35 @@ class GameViewController: UIViewController {
         }
     }
 
+}
+
+extension GameViewController: SCNPhysicsContactDelegate{
+    func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
+        if let donut = contact.nodeB.parent as? Donut{
+            collect(donut)
+        }
+    }
+}
+
+extension SCNParticleSystem{
+    static func loadParticleSystems(atPath path: String) -> [SCNParticleSystem] {
+        let url = URL(fileURLWithPath: path)
+        let directory = url.deletingLastPathComponent()
+
+        let fileName = url.lastPathComponent
+        let ext: String = url.pathExtension
+
+        if ext == "scnp" {
+            return [SCNParticleSystem(named: fileName, inDirectory: directory.relativePath)!]
+        } else {
+            var particles = [SCNParticleSystem]()
+            let scene = SCNScene(named: fileName, inDirectory: directory.relativePath, options: nil)
+            scene!.rootNode.enumerateHierarchy({(_ node: SCNNode, _ _: UnsafeMutablePointer<ObjCBool>) -> Void in
+                if node.particleSystems != nil {
+                    particles += node.particleSystems!
+                }
+            })
+            return particles
+        }
+    }
 }

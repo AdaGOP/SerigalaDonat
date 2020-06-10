@@ -18,6 +18,8 @@
 		463599F9248F3EFE009B3E2C /* JoyStickController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463599F8248F3EFE009B3E2C /* JoyStickController.swift */; };
 		463599FB248F3F99009B3E2C /* HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463599FA248F3F99009B3E2C /* HUD.swift */; };
 		463599FD248F4BEA009B3E2C /* SimdExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463599FC248F4BEA009B3E2C /* SimdExtensions.swift */; };
+		7DB9ACE4248F75D800913F1E /* Donut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB9ACE3248F75D800913F1E /* Donut.swift */; };
+		7DB9ACE9248F981400913F1E /* collect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7DB9ACE8248F981400913F1E /* collect.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		463599F8248F3EFE009B3E2C /* JoyStickController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoyStickController.swift; sourceTree = "<group>"; };
 		463599FA248F3F99009B3E2C /* HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUD.swift; sourceTree = "<group>"; };
 		463599FC248F4BEA009B3E2C /* SimdExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimdExtensions.swift; sourceTree = "<group>"; };
+		7DB9ACE3248F75D800913F1E /* Donut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Donut.swift; sourceTree = "<group>"; };
+		7DB9ACE8248F981400913F1E /* collect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = collect.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,9 +70,11 @@
 		463599DC248F2891009B3E2C /* Serigaladonat */ = {
 			isa = PBXGroup;
 			children = (
+				7DB9ACE7248F980800913F1E /* Audio */,
 				463599DD248F2892009B3E2C /* AppDelegate.swift */,
 				463599DF248F2892009B3E2C /* art.scnassets */,
 				463599E1248F2892009B3E2C /* GameViewController.swift */,
+				7DB9ACE3248F75D800913F1E /* Donut.swift */,
 				463599E3248F2892009B3E2C /* Main.storyboard */,
 				463599E6248F2893009B3E2C /* Assets.xcassets */,
 				463599E8248F2893009B3E2C /* LaunchScreen.storyboard */,
@@ -80,6 +86,14 @@
 				463599FC248F4BEA009B3E2C /* SimdExtensions.swift */,
 			);
 			path = Serigaladonat;
+			sourceTree = "<group>";
+		};
+		7DB9ACE7248F980800913F1E /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				7DB9ACE8248F981400913F1E /* collect.mp3 */,
+			);
+			path = Audio;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -142,6 +156,7 @@
 			files = (
 				463599E0248F2892009B3E2C /* art.scnassets in Resources */,
 				463599EA248F2893009B3E2C /* LaunchScreen.storyboard in Resources */,
+				7DB9ACE9248F981400913F1E /* collect.mp3 in Resources */,
 				463599E7248F2893009B3E2C /* Assets.xcassets in Resources */,
 				463599E5248F2892009B3E2C /* Main.storyboard in Resources */,
 			);
@@ -154,6 +169,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7DB9ACE4248F75D800913F1E /* Donut.swift in Sources */,
 				463599F9248F3EFE009B3E2C /* JoyStickController.swift in Sources */,
 				463599E2248F2892009B3E2C /* GameViewController.swift in Sources */,
 				463599F7248F30C5009B3E2C /* Wolf.swift in Sources */,
